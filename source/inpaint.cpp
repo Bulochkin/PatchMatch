@@ -181,7 +181,7 @@ void ExpectationStep(NNF_P nnf, int sourceToTarget, double*** vote, MaskedImage_
 
                     // get corresponding pixel in output patch
                     if (sourceToTarget)
-                    { xs=x+dx; ys=y+dy;	xt=xp+dx; yt=yp+dy;}
+                    { xs=x+dx; ys=y+dy; xt=xp+dx; yt=yp+dy;}
                     else
                     { xs=xp+dx; ys=yp+dy; xt=x+dx; yt=y+dy; }
 
@@ -271,7 +271,7 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
     printf("Build pyramid of images... done.\n");
 
     // for each level of the pyramid
-    cvNamedWindow("Progression", CV_WINDOW_AUTOSIZE);
+    // cvNamedWindow("Progression", CV_WINDOW_AUTOSIZE);
     for (level=maxlevel-1 ; level>0 ; level--) {
         printf( "\n*** Processing -  Zoom 1:%d ***" , 1<<level );
 
@@ -310,22 +310,23 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
 
         target = ExpectationMaximization(imp, level);
 
-        if (tmp != NULL)
-            tmp_pool.push_back(tmp);
-            // cvReleaseImage(&tmp);
-        tmp=cvCreateImage(size,IPL_DEPTH_8U,3);
-        cvResize(target->image,tmp,CV_INTER_LINEAR);
+        // if (tmp != NULL)
+        //     tmp_pool.push_back(tmp);
+        //     // cvReleaseImage(&tmp);
+        // tmp=cvCreateImage(size,IPL_DEPTH_8U,3);
+        // cvResize(target->image,tmp,CV_INTER_LINEAR);
 
-        cvShowImage("Progression",tmp);
-        cvMoveWindow("Progression",750, 100);
-        cvWaitKey(1);
+        // cvShowImage("Progression",tmp);
+        // cvMoveWindow("Progression",750, 100);
+        // cvWaitKey(1);
     }
 
+    // cvReleaseImage(&tmp);
+    // for (int i = 0; i < tmp_pool.size(); ++i) {
+    //     cvReleaseImage(&tmp_pool[i]);
+    // }
 
     return target->image;
-    // cvReleaseImage(&tmp);
-    // for (int i = 0; i < tmp_pool.size(); ++i)
-    //     cvReleaseImage(&tmp_pool[i]);
 }
 
 void freeInpaintingPyramid(Inpaint_P inp)
