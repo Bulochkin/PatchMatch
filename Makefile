@@ -44,7 +44,6 @@ $(OBJ_DIR)/%.d: %.cpp
 sinclude $(DEPFILES)
 
 $(BIN_TARGET): $(OBJS)
-	@echo $(OBJS)
 	@echo "[link] $< ..."
 	@mkdir -p $(BIN_DIR)
 	@$(CXX) $(OBJS) -o $@ $(CXXFLAGS)
