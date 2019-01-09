@@ -1,6 +1,7 @@
 #include "defineall.h"
+#include <unistd.h>
 
-// Disable to measure the PSNR or the SSIM measure 
+// Disable to measure the PSNR or the SSIM measure
 
 #define MESURES 0
 
@@ -17,9 +18,37 @@ double min1(double a, double b)
 	return (a + b - fabs(a-b) ) / 2;
 }
 
-int main(int argc, char** argv) 
-
+int main(int argc, char *argv[])
 {
+    char fileNameInput[150];
+    char fileNameMasked[150];
+	char fileNameOutput[150] = "output.jpg";
+    int radius = 30;
+
+    int opt;
+    printf("%d\n", optind);
+    while ((opt = getopt(argc, argv, "i:m:r:")) != -1) {
+        switch (opt)
+        {
+            case 'i':
+                strcpy(fileNameInput, optarg);
+                break;
+            case 'm':
+                strcpy(fileNameMasked, optarg);
+                break;
+            case 'r':
+                radius = atoi(optarg);
+                break;
+            default:
+                printf("Usage: patchmatch -i <image_file> -m <mask_file> -r <radius>\n");
+                return 1;
+        }
+    }
+
+    if (fileNameInput == NULL || fileNameMasked == NULL) {
+        printf("Usage: ./patchmatch -i <image_file> -m <mask_file> -r <radius>\n");
+        return 1;
+    }
 
 	printf("------------------------------------------------------------------ \n");
 	printf("                  Inpainting based PatchMatch                      \n");
@@ -31,29 +60,16 @@ int main(int argc, char** argv)
 	printf("              For more information please refer to:                \n");
 	printf(" http://www.cs.princeton.edu/gfx/pubs/Barnes_2009_PAR/index.php    \n");
 	printf("\n");
-	printf("                   @Author: Younesse ANDAM                         \n"); 
+	printf("                   @Author: Younesse ANDAM                         \n");
 	printf("            Contact: younesse.andam@gmail.com                      \n");
 	printf("                Copyright (c) 2010-2011                            \n");
 
-
 	clock_t tic,toc;
-	float cpu_time;     /* Total CPU time in minutes */ 
-
+	float cpu_time;     /* Total CPU time in minutes */
 
 	uchar* data;
 	CvSize size;
 	double height,width;
-
-	//Put your file name here
-	char fileNameInput[150] = "C:\\Users\\PVHP9868\\Desktop\\PATCH_MATCH_APPLICATION_CONSOLE\\image_files\\forest\\forest.bmp";
-	char fileNameMasked[150] = "C:\\Users\\PVHP9868\\Desktop\\PATCH_MATCH_APPLICATION_CONSOLE\\image_files\\forest\\forest_pruned.bmp";
-
-	char fileNameOutput[150];
-	char fileNameOutputMasked[150];
-	strcpy(fileNameOutput, fileNameInput);
-	strcpy(fileNameOutputMasked, fileNameMasked);
-	strcat(fileNameOutput, "_RESULT.png");
-	strcat(fileNameOutputMasked, "res.png");
 
 	IplImage* input_img=NULL , *maskimage=NULL,*distorted=NULL , *output_img=NULL,
 		*inpaint_mask_gray=NULL,*input_gray=NULL, *distorted_gray=NULL;
@@ -61,7 +77,7 @@ int main(int argc, char** argv)
 	input_img=cvLoadImage(fileNameInput, 1);
 
     if (!input_img) {
-		printf("Could not load image file: %s\n",fileNameInput); 
+		printf("Could not load image file: %s\n",fileNameInput);
 		exit(1);
 	}
 
@@ -118,19 +134,19 @@ int main(int argc, char** argv)
     for ( int i = 0 ; i < height ; ++i )
         for ( int j = 0 ; j < width ; ++j )
             if ( data[i*step+j*channels]==255 )
-				mask[i][j]=1;	   
+				mask[i][j]=1;
 
 
 		Inpaint_P inp = initInpaint();
-		output_img = inpaint(inp, input_img, (int**)mask, 2);
+		output_img = inpaint(inp, input_img, (int**)mask, radius);
         if (!cvSaveImage(fileNameOutput,output_img))
 
 			printf("/!\\/!\\/!\\/!\\/!\\/!\\Could not save the resultant image. Check the path of saving.../!\\/!\\/!\\/!\\/!\\/!\\\n");
 
 		//cvSaveImage("mask.bmp",maskimage);
-		
-/*---------------------------------------------- Quality Mesure ----------------------------------------------*/ 
-// It will be useful so far to measure the quality of the recontructed areas against the original ones 
+
+/*---------------------------------------------- Quality Mesure ----------------------------------------------*/
+// It will be useful so far to measure the quality of the recontructed areas against the original ones
 
 #if MESURES
 		double ssim;

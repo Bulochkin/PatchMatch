@@ -247,6 +247,7 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
     // initial image
     imp->initial = initMaskedImage(input, mask);
     IplImage* tmp = NULL;
+    std::vector<IplImage *> tmp_pool; tmp_pool.clear();
     CvSize size;
     size = cvSize(imp->initial->image->width,imp->initial->image->height);
 
@@ -266,6 +267,8 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
         addEltInpaintingPyramid(imp, source);
     }
     int maxlevel=imp->nbEltPyramid;
+
+    printf("Build pyramid of images... done.\n");
 
     // for each level of the pyramid
     cvNamedWindow("Progression", CV_WINDOW_AUTOSIZE);
@@ -306,9 +309,10 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
         }
 
         target = ExpectationMaximization(imp, level);
-        if (tmp != NULL )
-            cvReleaseImage(&tmp);
 
+        if (tmp != NULL)
+            tmp_pool.push_back(tmp);
+            // cvReleaseImage(&tmp);
         tmp=cvCreateImage(size,IPL_DEPTH_8U,3);
         cvResize(target->image,tmp,CV_INTER_LINEAR);
 
@@ -319,7 +323,9 @@ IplImage* inpaint(Inpaint_P imp, IplImage* input, int ** mask, int radius)
 
 
     return target->image;
-    cvReleaseImage(&tmp);
+    // cvReleaseImage(&tmp);
+    // for (int i = 0; i < tmp_pool.size(); ++i)
+    //     cvReleaseImage(&tmp_pool[i]);
 }
 
 void freeInpaintingPyramid(Inpaint_P inp)
