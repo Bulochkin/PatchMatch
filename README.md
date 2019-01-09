@@ -8,8 +8,7 @@ make
 
 # Original README
 
-=====================================
-README:   Inpainting based PatchMatch
+Inpainting based PatchMatch
 =====================================
 
 @Author: Younesse ANDAM
