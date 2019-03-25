@@ -35,32 +35,38 @@ int main(int argc, char *argv[])
     printf("                Copyright (c) 2010-2011                            \n");
     printf("\n");
 
-    char fileNameInput[150];
-    char fileNameMasked[150];
-    char fileNameOutput[150] = "output.jpg";
+    char *fileNameInput = NULL;
+    char *fileNameMasked = NULL;
+    char *fileNameOutput = NULL;
     int radius = 30;
 
     int opt;
-    while ((opt = getopt(argc, argv, "i:m:r:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:m:o:r:")) != -1) {
         switch (opt)
         {
             case 'i':
+                fileNameInput = new char[150];
                 strcpy(fileNameInput, optarg);
                 break;
             case 'm':
+                fileNameMasked = new char[150];
                 strcpy(fileNameMasked, optarg);
+                break;
+            case 'o':
+                fileNameOutput = new char[150];
+                strcpy(fileNameOutput, optarg);
                 break;
             case 'r':
                 radius = atoi(optarg);
                 break;
             default:
-                printf("Usage: patchmatch -i <image_file> -m <mask_file> -r <radius>\n");
+                printf("Usage: patchmatch -i <image_file> -m <mask_file> -o <output_file> -r <radius>\n");
                 return 1;
         }
     }
 
-    if (fileNameInput == NULL || fileNameMasked == NULL) {
-        printf("Usage: ./patchmatch -i <image_file> -m <mask_file> -r <radius>\n");
+    if (fileNameInput == NULL || fileNameMasked == NULL || fileNameOutput == NULL) {
+        printf("Usage: ./patchmatch -i <image_file> -m <mask_file> -o <output_file> -r <radius>\n");
         return 1;
     }
 
