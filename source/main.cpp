@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     int step = maskimage->widthStep/sizeof(uchar);
     int ** mask;
     mask = (int **) calloc(int(height),sizeof(int*));
-    for ( int i=0 ; i<width ; i++)
+    for ( int i=0 ; i<height; i++)
         mask[i] = (int *) calloc(int(width),sizeof(int));
 
     printf("----------------------------------------------------------------------\n");
@@ -130,10 +130,11 @@ int main(int argc, char *argv[])
     data = (uchar *)maskimage->imageData;
     //Timer: tic, toc
     tic = clock ();
-    for ( int i = 0 ; i < height ; ++i )
+    for ( int i = 0 ; i < height ; ++i ) {
         for ( int j = 0 ; j < width ; ++j )
             if ( data[i*step+j*channels]==255 )
                 mask[i][j]=1;
+    }
 
     Inpaint_P inp = initInpaint();
     output_img = inpaint(inp, input_img, (int**)mask, radius);
